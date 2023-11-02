@@ -13,6 +13,9 @@ import chalk from 'chalk'
 const ARGS = {
   path: new Argument('[path]', 'Path to the `package.json` file.').default(process.cwd()),
   updates: new Option('-u, --updates', 'Displays only the dependencies that are not up to date.').default(false),
+  patch: new Option('--no-patch', 'Ignore `patch` versions when checking for updates.').default(true),
+  minor: new Option('--no-minor', 'Ignore `minor` versions when checking for updates.').default(true),
+  major: new Option('--no-major', 'Ignore `major` versions when checking for updates.').default(true),
 }
 
 // MAIN
@@ -21,12 +24,18 @@ program
   .description('Reads the dependencies from a `package.json` file and displays the latest `patch`, `minor`, and `major` versions available.')
   .addArgument(ARGS.path)
   .addOption(ARGS.updates)
+  .addOption(ARGS.patch)
+  .addOption(ARGS.minor)
+  .addOption(ARGS.major)
   .action(async (path, opts) => {
 
     let packagePath = stringSchema().required().validateSync(path)
 
     const options = objectSchema({
       updates: booleanSchema().required(),
+      patch: booleanSchema().required(),
+      minor: booleanSchema().required(),
+      major: booleanSchema().required(),
     }).required().validateSync(opts)
 
     if (!existsSync(packagePath)) throw new Error(`Path ${packagePath} does not exist`)
@@ -68,18 +77,18 @@ program
 
           const CURRENT_VERSION = version.copy()
 
-          const patchVersion = await checkUpdate(dependency, `${version.major}.${version.minor}.x`) ?? CURRENT_VERSION
-          const minorVersion = await checkUpdate(dependency, `${version.major}.x.x`) ?? CURRENT_VERSION
-          const majorVersion = await checkUpdate(dependency, 'latest') ?? CURRENT_VERSION
+          const patchVersion = (options.patch) ? await checkUpdate(dependency, `${version.major}.${version.minor}.x`) ?? CURRENT_VERSION : CURRENT_VERSION
+          const minorVersion = (options.minor) ? await checkUpdate(dependency, `${version.major}.x.x`) ?? CURRENT_VERSION : CURRENT_VERSION
+          const majorVersion = (options.major) ? await checkUpdate(dependency, 'latest') ?? CURRENT_VERSION : CURRENT_VERSION
 
           const output: string[] = []
 
           output.push(chalk.bold(dependency))
           output.push(chalk.bold.cyan(version))
 
-          if (!patchVersion.comparePatch(version)) output.push(chalk.bold.green(patchVersion.toString()))
-          if (!minorVersion.compareMinor(patchVersion)) output.push(chalk.bold.yellow(minorVersion.toString()))
-          if (!majorVersion.compareMajor(minorVersion)) output.push(chalk.bold.red(majorVersion.toString()))
+          if (options.patch && !patchVersion.comparePatch(version)) output.push(chalk.bold.green(patchVersion.toString()))
+          if (options.minor && !minorVersion.compareMinor(patchVersion)) output.push(chalk.bold.yellow(minorVersion.toString()))
+          if (options.major && !majorVersion.compareMajor(minorVersion)) output.push(chalk.bold.red(majorVersion.toString()))
 
           if (options.updates && output.length <= 2) return
 
