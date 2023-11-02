@@ -7,6 +7,7 @@ A collection of useful commands, developed with NodeJS.
 - [**`npv:`**](#npv) Checks for dependencies updates in a **Node JS** project.
 - [**`fsls:`**](#fsls) Lists the details of the **files** and **directories** found in the given **path**.
 - [**`fsempty:`**](#fsempty) Display a list of all empty directories found within the given path.
+- [**`fsfind:`**](#fsfind) Display a list of items whose names match the given text.
 
 ## NPV
 
@@ -43,3 +44,12 @@ This command display a list of all empty directories found within the given path
 | **Arguments / Options** | **Description**         | **Default**                |
 |-------------------------|-------------------------|----------------------------|
 | **`[path]`**            | Initial directory path. | Current working directory. |
+
+## FSFIND
+
+This command display a list of items whose names match the given text.
+
+| **Arguments / Options** | **Description**        | **Default**                |
+|-------------------------|------------------------|----------------------------|
+| **`<search>`**          | Text to search.        |                            |
+| **`[path]`**            | Target directory path. | Current working directory. |
