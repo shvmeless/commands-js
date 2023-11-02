@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { object as objectSchema, string as stringSchema } from 'yup'
+import { object as objectSchema, string as stringSchema, boolean as booleanSchema } from 'yup'
 import { existsSync, readFileSync, statSync } from 'fs'
+import { Argument, Option, program } from 'commander'
 import { Version } from '../libs/common/Version'
 import { parseToString } from '../utils/parser'
-import { Argument, program } from 'commander'
 import * as record from '../utils/common'
 import packageData from 'package-json'
 import { join } from 'path'
@@ -12,6 +12,7 @@ import chalk from 'chalk'
 // ARGUMENTS
 const ARGS = {
   path: new Argument('[path]', 'Path to the `package.json` file.').default(process.cwd()),
+  updates: new Option('-u, --updates', 'Displays only the dependencies that are not up to date.').default(false),
 }
 
 // MAIN
@@ -19,9 +20,14 @@ program
   .version('0.1.0')
   .description('Reads the dependencies from a `package.json` file and displays the latest `patch`, `minor`, and `major` versions available.')
   .addArgument(ARGS.path)
-  .action(async (path) => {
+  .addOption(ARGS.updates)
+  .action(async (path, opts) => {
 
     let packagePath = stringSchema().required().validateSync(path)
+
+    const options = objectSchema({
+      updates: booleanSchema().required(),
+    }).required().validateSync(opts)
 
     if (!existsSync(packagePath)) throw new Error(`Path ${packagePath} does not exist`)
 
@@ -74,6 +80,8 @@ program
           if (!patchVersion.comparePatch(version)) output.push(chalk.bold.green(patchVersion.toString()))
           if (!minorVersion.compareMinor(patchVersion)) output.push(chalk.bold.yellow(minorVersion.toString()))
           if (!majorVersion.compareMajor(minorVersion)) output.push(chalk.bold.red(majorVersion.toString()))
+
+          if (options.updates && output.length <= 2) return
 
           if (!isGroupInit) {
             process.stdout.write(`\n${chalk.bold(`${group}:`)}\n\n`)
