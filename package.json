@@ -15,7 +15,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "bin": {},
+  "bin": {
+    "npv": "./dist/commands/npv.js"
+  },
   "scripts": {
     "lint": "eslint ./src --ext .ts",
     "build": "tsc",
