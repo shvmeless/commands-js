@@ -1,0 +1,16 @@
+# DEPENDENCIES
+package-lock.json
+node_modules/
+
+# NPM
+*.tgz
+
+# TEMP
+temp/
+tmp/
+
+# PRODUCTION
+public/
+build/
+dist/
+out/

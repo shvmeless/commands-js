@@ -1,0 +1,32 @@
+{
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "extends": "standard-with-typescript",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "ignorePatterns": [
+    "node_modules/"
+  ],
+  "overrides": [],
+  "rules": {
+    /* TYPESCRIPT OVERRIDE */
+    "@typescript-eslint/comma-dangle": ["error","always-multiline"],
+    "comma-dangle": "off",
+    /* TYPESCRIPT */
+    "@typescript-eslint/array-type": ["warn",{"default": "array","readonly": "array"}],
+    "@typescript-eslint/no-unsafe-declaration-merging": "error",
+    "@typescript-eslint/no-unsafe-enum-comparison": "error",
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-return": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    /* VANILLA */
+    "arrow-parens": ["warn","always"],
+    "padded-blocks": "off"
+  }
+}
