@@ -1,28 +1,37 @@
 #!/usr/bin/env node
+import { boolean as booleanSchema, object as objectSchema, string } from 'yup'
 import { type FilesystemItem } from '../libs/common/FilesystemItem'
+import { Argument, Option, program } from 'commander'
 import * as filesystem from '../utils/filesystem'
-import { Argument, program } from 'commander'
 import { existsSync, readdirSync } from 'fs'
 import formatter from '../utils/formatter'
 import { dirname, join } from 'path'
 import stripAnsi from 'strip-ansi'
-import { string } from 'yup'
 import chalk from 'chalk'
 
 // ARGUMENTS
 const args = {
-  path: new Argument('[path]', 'path to package.json').default(process.cwd()),
+  path: new Argument('[path]', 'Path to directory.').default(process.cwd()),
+  files: new Option('--no-files', 'Ignores the files.').default(true),
+  dirs: new Option('--no-dirs', 'Ignores the directories.').default(true),
 }
 
 // MAIN
 program
   .version('0.0.1')
-  .description('filesystem')
+  .description('Lists the details of the files and directories found in the given path.')
   .addArgument(args.path)
-  .action(async (argPath) => {
+  .addOption(args.files)
+  .addOption(args.dirs)
+  .action(async (argPath, opts) => {
 
     const targetPath = string().required().validateSync(argPath)
     const parentPath = dirname(targetPath)
+
+    const options = objectSchema({
+      files: booleanSchema().required(),
+      dirs: booleanSchema().required(),
+    }).required().validateSync(opts)
 
     if (!existsSync(targetPath)) throw new Error(`Path does not exist: ${targetPath}`)
     if (!existsSync(parentPath)) throw new Error(`Path does not exist: ${parentPath}`)
@@ -43,8 +52,8 @@ program
       const childPath = join(targetPath, child)
       const item = filesystem.read(childPath)
 
-      if (item.type === 'DIR') directories.push(item)
-      else files.push(item)
+      if (item.type === 'DIR' && options.dirs) directories.push(item)
+      else if (options.files) files.push(item)
 
     }
 
@@ -86,6 +95,7 @@ program
     table.unshift([header])
 
     table.forEach((group) => {
+
       group.forEach((item) => {
 
         item.ctime = formatter.padding(item.ctime, widths.ctime, 'LEFT')
@@ -96,7 +106,9 @@ program
         process.stdout.write(`${item.ctime}  ${item.birthtime}  ${item.size}  ${item.name}\n`)
 
       })
-      process.stdout.write('\n')
+
+      if (group.length > 0) process.stdout.write('\n')
+
     })
 
   })
