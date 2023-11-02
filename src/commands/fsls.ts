@@ -18,7 +18,7 @@ const args = {
 
 // MAIN
 program
-  .version('0.0.1')
+  .version('0.1.0')
   .description('Lists the details of the files and directories found in the given path.')
   .addArgument(args.path)
   .addOption(args.files)

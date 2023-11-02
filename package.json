@@ -1,7 +1,7 @@
 {
   "name": "commands-js",
   "description": "A collection of useful commands, developed with NodeJS.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "author": {
     "name": "Luciano Aedo Puga",
@@ -18,7 +18,8 @@
     "access": "public"
   },
   "bin": {
-    "npv": "./dist/commands/npv.js"
+    "npv": "./dist/commands/npv.js",
+    "fsls": "./dist/commands/fsls.js"
   },
   "scripts": {
     "lint": "eslint ./src --ext .ts",
