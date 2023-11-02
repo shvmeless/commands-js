@@ -12,7 +12,7 @@ const ARGS = {
 
 // MAIN
 program
-  .version('0.0.1')
+  .version('0.1.0')
   .description('Display a list of all empty directories found within the given path.')
   .addArgument(ARGS.path)
   .action(async (argPath) => {

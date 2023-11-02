@@ -13,7 +13,7 @@ const args = {
 
 // MAIN
 program
-  .version('0.0.1')
+  .version('0.1.0')
   .description('Display a list of items whose names match the given text.')
   .addArgument(args.search)
   .addArgument(args.path)
